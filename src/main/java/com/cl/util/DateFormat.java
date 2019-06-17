@@ -6,35 +6,78 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * 时间日期工具转换类
+ * 
+ * @author: 王越
+ * @date: 2019年5月23日 下午4:13:17
+ */
 public class DateFormat {
-	// 字符串转换为Date类型 yyyy-MM-dd
-	private static final SimpleDateFormat parse = new SimpleDateFormat("yyyy-MM-dd");
 
-	// Date类型数据转换为字符串yyyy-MM-dd
+	/**
+	 * 格式：yyyy-MM-dd
+	 */
 	private static final SimpleDateFormat formatDay = new SimpleDateFormat("yyyy-MM-dd");
 
-	// Date类型数据转换为字符串yyyy-MM-dd HH:mm:ss
+	/**
+	 * 格式：yyyy-MM-dd HH:mm:ss
+	 */
 	private static final SimpleDateFormat formatSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	// Date类型数据转换为字符串yyyy年MM月dd日
+	/**
+	 * 格式：yyyy年MM月dd日
+	 */
 	private static final SimpleDateFormat formatChinese = new SimpleDateFormat("yyyy年MM月dd日");
 
-	// Date类型数据转换为字符串yyyyMMddHHmmss(多用于文件编码)
+	/**
+	 * 格式：yyyyMMddHHmmss(多用于文件编码)
+	 */
 	private static final SimpleDateFormat formatCode = new SimpleDateFormat("yyyyMMddHHmmss");
 
-	// UTC时间转换成北京时间 iView的DatePicker控件时间为UTC时间，比北京时间少8小时
-	private static final SimpleDateFormat gmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	/**
+	 * 格式：yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+	 */
+	private static final SimpleDateFormat formatUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+	/**
+	 * 返回当前Timestamp时间
+	 * 
+	 * @return yyyy-MM-dd HH-mm-ss[..]格式的Timestamp类型
+	 */
+	public static Timestamp getTimestamp() {
+//		 return new Timestamp(new Date().getTime());
+		return new Timestamp(System.currentTimeMillis());
+	}
+
+	/**
+	 * 将iview的日期控件，带时分秒的UTC日期转成Timestamp
+	 * 
+	 * @param time yyyy-MM-dd HH-mm-ss格式的字符串
+	 * @return yyyy-MM-dd HH-mm-ss[..]格式的Timestamp类型
+	 */
+	public static Timestamp parseTimestampByUTC(String time) {
+		return Timestamp.valueOf(DateFormat.formatSecond(DateFormat.parseDateByUTC(time)));
+	}
+
+	/**
+	 * 获取当前Date类型时间
+	 * 
+	 * @return 当前Date类型时间
+	 */
+	public static Date getDate() {
+		return new Date();
+	}
 
 	/**
 	 * UTC时间转换成北京时间 iView的DatePicker控件时间为UTC时间，比北京时间少8小时
 	 * 
-	 * @param time
-	 * @return
+	 * @param time iView的DatePicker控件UTC时间
+	 * @return 北京时间的Date类型
 	 */
-	public static Date GMT(String time) {
+	public static Date parseDateByUTC(String time) {
 		Date date = null;
 		try {
-			date = gmt.parse(time);
+			date = formatUTC.parse(time);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -52,110 +95,68 @@ public class DateFormat {
 
 	/**
 	 * 字符串转换为Date类型 yyyy-MM-dd
-	 */
-	public static Date parse(String time) {
-		try {
-			return parse.parse(time);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	/**
-	 * @param time yyyy-MM-dd HH-mm-ss格式的字符串
-	 * @return yyyy-MM-dd的Date类型
+	 * 
+	 * @param time yyyy-MM-dd格式的字符串
+	 * @return yyyy-MM-dd格式的Date类型
 	 */
 	public static Date parseDay(String time) {
 		try {
-			// 注意java.sql.Date.valueOf()函数只能接受参数类型为yyyy-MM-dd类型的字符串
-			return java.sql.Date.valueOf(formatDay.format(formatDay.parse(time)));
-		} catch (ParseException e) {
+			return formatDay.parse(time);
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	/**
-	 * 返回当前时间
-	 * 
-	 * @return yyyy-MM-dd HH-mm-ss[..]格式的Timestamp类型
-	 */
-	public static Timestamp getTimestamp() {
-		// return new Timestamp(new Date().getTime());
-		return new Timestamp(System.currentTimeMillis());
-	}
-
-	/**
-	 * 将iview的日期控件，带时分秒的转成Timestamp
+	 * 字符串转换为Date类型 yyyy-MM-dd
 	 * 
 	 * @param time yyyy-MM-dd HH-mm-ss格式的字符串
-	 * @return yyyy-MM-dd HH-mm-ss[..]格式的Timestamp类型
+	 * @return yyyy-MM-dd的Date类型
+	 * @throws ParseException 解析异常
 	 */
-	public static Timestamp stringToTimestamp(String time) {
-		Timestamp ts = null;
-		try {
-			ts = Timestamp.valueOf(DateFormat.formatSecond(DateFormat.GMT(time)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return ts;
-	}
-
-	/**
-	 * 将string字符时间转换成Timestamp类型数据
-	 * 
-	 * @param time 前端js获取到的时间
-	 * @return Timestamp
-	 */
-	public static Timestamp stringTimestamp(String time) {
-		Timestamp ts = null;
-		try {
-			ts = Timestamp.valueOf(time);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return ts;
+	public static Date parseDayBySecond(String time) throws ParseException {
+		// 注意java.sql.Date.valueOf()函数只能接受参数类型为yyyy-MM-dd类型的字符串
+		return java.sql.Date.valueOf(formatDay.format(formatDay.parse(time)));
 	}
 
 	/**
 	 * Date类型数据转换为字符串yyyy-MM-dd
+	 * 
+	 * @param date Date类型的日期
+	 * @return yyyy-MM-dd的字符串
 	 */
 	public static String formatDay(Date date) {
-		try {
-			return formatDay.format(date);
-		} catch (Exception e) {
-			return null;
-		}
+		return formatDay.format(date);
 	}
 
 	/**
 	 * Date类型数据转换为字符串yyyy-MM-dd HH:mm:ss
+	 * 
+	 * @param date Date类型数据
+	 * @return yyyy-MM-dd HH:mm:ss的字符串
 	 */
 	public static String formatSecond(Date date) {
-		try {
-			return formatSecond.format(date);
-		} catch (Exception e) {
-			return null;
-		}
+		return formatSecond.format(date);
 	}
 
 	/**
 	 * Date类型数据转换为字符串yyyy年MM月dd日
+	 * 
+	 * @param date Date类型数据
+	 * @return yyyy年MM月dd日的字符串
 	 */
 	public static String formatChinese(Date date) {
-		try {
-			return formatChinese.format(date);
-		} catch (Exception e) {
-			return null;
-		}
+		return formatChinese.format(date);
 	}
 
 	/**
-	 * Date类型数据转换为字符串yyyyMMddHHmmss(多用于文件编码)
+	 * Date类型数据转换为字符串yyyyMMddHHmmss
 	 * 
-	 * @param date Date类型时间
-	 * @return yyyyMMddHHmmss格式字符串
+	 * @param date Date类型数据
+	 * @return yyyyMMddHHmmss的字符串
 	 */
 	public static String formatCode(Date date) {
 		return formatCode.format(date);
 	}
+
 }

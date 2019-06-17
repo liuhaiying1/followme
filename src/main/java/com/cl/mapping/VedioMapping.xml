@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cl.mapper.VedioMapper">
+  <resultMap id="BaseResultMap" type="com.cl.entity.Vedio">
+  <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="vedioPath" property="vedioPath" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="duration" property="duration" jdbcType="FLOAT" />
+    <result column="vedioName" property="vedioName" jdbcType="VARCHAR" />
+    <result column="gifPath" property="gifPath" jdbcType="VARCHAR" />
+    <result column="actID" property="actID" jdbcType="INTEGER" />
+    <result column="clubName" property="clubName" jdbcType="VARCHAR" />
+    <result column="actCost" property="actCost" jdbcType="VARCHAR" />
+    <result column="actType" property="actType" jdbcType="INTEGER" />
+    <result column="beginTime" property="beginTime" jdbcType="TIMESTAMP" />
+    <result column="beginCity" property="beginCity" jdbcType="VARCHAR" />
+  </resultMap>
+  
+    <sql id="Base_Column_List" >
+    id, vedioPath, description, duration, vedioName,gifPath,actID,actType
+  </sql>
+  <select id="selectGif" resultMap="BaseResultMap">
+  	SELECT
+		v.actID,
+		v.gifPath,
+		v.description,
+		c.clubName,
+		a.actCost,
+		v.actType
+	FROM
+		vedio v
+	INNER JOIN activity a ON v.actId = a.id
+	INNER JOIN club c ON a.clubID = c.id
+	WHERE
+		a.isDelete = 0
+	AND c.isDelete = 0
+	ORDER BY
+		v.actId DESC
+  </select>
+  
+   <select id="selectVedioByActID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	SELECT
+		c.clubName,
+		v.vedioPath,
+		v.duration,
+		v.description,
+		a.beginTime,
+		a.actCost,
+		a.beginCity
+	FROM
+		vedio v
+	INNER JOIN activity a ON v.actID = a.id
+	INNER JOIN club c ON a.clubID = c.id
+	WHERE
+		a.isDelete = 0
+	AND c.isDelete = 0
+	AND v.actID = #{actID}
+  </select>
+  
+  
+  <insert id="insert" parameterType="com.cl.entity.Vedio" >
+    INSERT INTO `vedio`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vedioPath != null" >
+        vedioPath,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="duration != null" >
+        duration,
+      </if>
+      <if test="vedioName != null" >
+        vedioName,
+      </if>
+      <if test="gifPath != null" >
+        gifPath,
+      </if>
+      <if test="actID != null" >
+        actID,
+      </if>
+      <if test="actType != null" >
+        actType,
+      </if>
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides="," >
+      <if test="vedioPath != null" >
+        #{vedioPath,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="duration != null" >
+        #{duration,jdbcType=FLOAT},
+      </if>
+      <if test="vedioName != null" >
+        #{vedioName,jdbcType=VARCHAR},
+      </if>
+      <if test="gifPath != null" >
+        #{gifPath,jdbcType=VARCHAR},
+      </if>
+      <if test="actID != null" >
+        #{actID,jdbcType=INTEGER},
+      </if>
+      <if test="actType != null" >
+        #{actType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+
+	
+
+
+ 
+
+</mapper>
